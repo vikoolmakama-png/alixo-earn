@@ -501,12 +501,18 @@ def deposit():
             flash("Enter a valid deposit amount and sender name.", "error")
             return redirect(url_for("deposit"))
 
-        db.execute(
-            """INSERT INTO deposits (user_id, amount, sender_name, status)
-               VALUES (%s, %s, %s, 'Pending')""",
-            (user["id"], amount, sender_name)
-        )
-        db.commit()
+        try:
+            db.execute(
+                """INSERT INTO deposits (user_id, amount, sender_name, status)
+                   VALUES (%s, %s, %s, 'Pending')""",
+                (user["id"], amount, sender_name)
+            )
+            db.commit()
+        except Exception:
+            db.rollback()
+            app.logger.exception("Deposit submission failed")
+            flash("Deposit submission failed. No deposit request was saved. Please try again.", "error")
+            return redirect(url_for("deposit"))
 
         flash("Deposit request submitted. It is awaiting admin verification.", "success")
         return redirect(url_for("transaction_history"))
