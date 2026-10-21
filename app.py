@@ -508,10 +508,17 @@ def deposit():
                 (user["id"], amount, sender_name)
             )
             db.commit()
-        except Exception:
+        except Exception as exc:
             db.rollback()
             app.logger.exception("Deposit submission failed")
-            flash("Deposit submission failed. No deposit request was saved. Please try again.", "error")
+            error_id = __import__("secrets").token_hex(4)
+            app.logger.error("Deposit diagnostic ID %s; error type: %s", error_id, type(exc).__name__)
+            flash(
+                f"Deposit failed (reference {error_id}). "
+                f"Database error type: {type(exc).__name__}. "
+                "No deposit request was saved. Contact support with this reference.",
+                "error"
+            )
             return redirect(url_for("deposit"))
 
         flash("Deposit request submitted. It is awaiting admin verification.", "success")
