@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: alixo-earn
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: alixo-earn-db
+          property: connectionString
+      - key: ALIXO_SECRET_KEY
+        generateValue: true
+      - key: ALIXO_ADMIN_USERNAME
+        sync: false
+      - key: ALIXO_ADMIN_PASSWORD_HASH
+        sync: false
+
+databases:
+  - name: alixo-earn-db
+    databaseName: alixo_earn
+    user: alixo_earn_user
