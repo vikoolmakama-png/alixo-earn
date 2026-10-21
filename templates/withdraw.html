@@ -33,7 +33,7 @@
             <span>Minimum withdrawal</span>
             <strong>
                 {% if active_plan %}
-                ₦{{ "{:,.0f}".format(active_plan.withdrawal) }}
+                ₦{{ "{:,.0f}".format(active_plan["withdrawal"]) }}
                 {% else %}
                 Not available — activate a plan first
                 {% endif %}

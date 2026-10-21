@@ -692,18 +692,13 @@ def withdraw():
         minimum = active_plan["withdrawal"]
 
         if amount < minimum:
-            flash(
-                f"Your plan's minimum withdrawal is ₦{minimum:,.0f}.",
-                "error"
-            )
+            flash(f"Your plan's minimum withdrawal is ₦{minimum:,.0f}.", "error")
             return redirect(url_for("withdraw"))
 
         if amount > user["balance"]:
             flash("Your requested amount exceeds your recorded balance.", "error")
             return redirect(url_for("withdraw"))
 
-        # No payout is made here. The request is not stored or deducted
-        # until a proper withdrawal review and transaction system exists.
         flash(
             "Your details passed basic checks, but withdrawal requests "
             "are not yet enabled. No money has been deducted or sent.",
@@ -712,7 +707,8 @@ def withdraw():
         return redirect(url_for("withdraw"))
 
     referral_total = db.execute(
-        "SELECT COALESCE(SUM(commission_amount), 0) FROM referral_commissions WHERE referrer_id = %s",
+        "SELECT COALESCE(SUM(commission_amount), 0) "
+        "FROM referral_commissions WHERE referrer_id = %s",
         (user["id"],)
     ).fetchone()[0]
 
@@ -720,9 +716,10 @@ def withdraw():
         "withdraw.html",
         user=user,
         active_plan=active_plan,
-        referral_total=referral_total
+        referral_total=referral_total,
+        main_available=user["balance"],
+        referral_available=0
     )
-
 
 @app.route("/earnings")
 @login_required
