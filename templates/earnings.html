@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Earnings | Alixo Earn</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="navbar">
+    <a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a>
+    <a href="{{ url_for('dashboard') }}" class="nav-login">Dashboard</a>
+</header>
+
+<main class="dashboard-page">
+    <section class="welcome-panel">
+        <div class="status">EARNINGS OVERVIEW</div>
+        <h1>My <span>Earnings.</span></h1>
+        <p>Review the funds recorded in your account.</p>
+    </section>
+
+    <section class="dashboard-grid">
+        <article class="dashboard-card">
+            <div class="feature-icon">₦</div>
+            <p>Recorded Balance</p>
+            <h2>₦{{ "{:,.2f}".format(user["balance"]) }}</h2>
+            <small>Current recorded account balance</small>
+        </article>
+        <article class="dashboard-card">
+            <div class="feature-icon">👥</div>
+            <p>Registered Referrals</p>
+            <h2>{{ referral_count }}</h2>
+            <small>Registrations using your referral code</small>
+        </article>
+    </section>
+
+    <section class="referral-panel">
+        <h2>Reward history</h2>
+        <p>No verified reward transactions are available to display yet.</p>
+        <p>Referral rewards require the referred member's qualifying plan activation to be verified.</p>
+        <a class="plan-button" href="{{ url_for('dashboard') }}">Back to Dashboard →</a>
+    </section>
+</main>
+</body>
+</html>

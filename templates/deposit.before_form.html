@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#050914">
+<title>Deposit | Alixo Earn</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="navbar">
+    <a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a>
+    <a href="{{ url_for('dashboard') }}" class="nav-login">Dashboard</a>
+</header>
+
+<main class="dashboard-page">
+    <section class="welcome-panel">
+        <div class="status">ACCOUNT FUNDING</div>
+        <h1>Make a <span>Deposit.</span></h1>
+        <p>Use the payment details below. Your payment must be verified before your balance or membership status changes.</p>
+    </section>
+
+    <section class="referral-panel">
+        <div class="status">PAYMENT METHOD</div>
+        <h2>Zap Account</h2>
+
+        <div class="payment-detail">
+            <span>Bank</span>
+            <strong>Fidelity Bank</strong>
+        </div>
+        <div class="payment-detail">
+            <span>Account name</span>
+            <strong>NNANTA CANON</strong>
+        </div>
+        <div class="payment-detail">
+            <span>Account number</span>
+            <strong>4567321956</strong>
+        </div>
+
+        <p class="deposit-warning">
+            Before transferring money, confirm that these payment details
+            are correct and authorized for Alixo Earn.
+        </p>
+
+        <h3>How to deposit</h3>
+        <ol>
+            <li>Select the membership plan you want.</li>
+            <li>Transfer the exact amount to the account above.</li>
+            <li>Keep your transaction receipt for reference.</li>
+            <li>Wait for payment verification before activating your plan.</li>
+        </ol>
+
+        <p class="deposit-warning">
+            Deposits are not automatically confirmed by visiting this page.
+            Do not make another transfer if a previous payment is still being
+            checked.
+        </p>
+
+        <a class="dashboard-back" href="{{ url_for('plans_page') }}">View Membership Plans →</a>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Withdraw | Alixo Earn</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="navbar">
+    <a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a>
+    <a href="{{ url_for('dashboard') }}" class="nav-login">Dashboard</a>
+</header>
+
+<main class="dashboard-page">
+    <section class="welcome-panel">
+        <div class="status">WITHDRAWAL CENTRE</div>
+        <h1>Request a <span>Withdrawal.</span></h1>
+        <p>Check your eligibility before requesting a payout.</p>
+    </section>
+
+    <section class="referral-panel">
+        <h2>Your withdrawal requirements</h2>
+        <div class="payment-detail">
+            <span>Active plan</span>
+            <strong>{{ user["plan"] }}</strong>
+        </div>
+        <div class="payment-detail">
+            <span>Available recorded balance</span>
+            <strong>₦{{ "{:,.2f}".format(user["balance"]) }}</strong>
+        </div>
+        <div class="payment-detail">
+            <span>Minimum withdrawal</span>
+            <strong>
+                {% if active_plan %}
+                ₦{{ "{:,.0f}".format(active_plan.withdrawal) }}
+                {% else %}
+                Not available — activate a plan first
+                {% endif %}
+            </strong>
+        </div>
+
+        <h3>Receiving bank details</h3>
+        <form method="POST" action="{{ url_for('withdraw') }}" class="account-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <label for="account_name">Account name</label>
+            <input id="account_name" name="account_name" type="text" maxlength="100" required>
+
+            <label for="account_number">Account number</label>
+            <input id="account_number" name="account_number" type="text" inputmode="numeric" pattern="[0-9]{10}" minlength="10" maxlength="10" required>
+
+            <label for="bank_name">Bank name</label>
+            <input id="bank_name" name="bank_name" type="text" maxlength="100" required>
+
+            <label for="amount">Withdrawal amount (₦)</label>
+            <input id="amount" name="amount" type="number" min="1" step="1" required>
+
+            <button type="submit" class="primary-button">Submit Withdrawal Request</button>
+        </form>
+
+        <p class="deposit-warning">
+            Submitting a request does not guarantee payment. Eligibility and
+            balance must be checked, and requests must be reviewed before payout.
+        </p>
+    </section>
+</main>
+</body>
+</html>

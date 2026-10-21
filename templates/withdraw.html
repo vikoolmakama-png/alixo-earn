@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Withdraw | Alixo Earn</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="navbar">
+    <a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a>
+    <a href="{{ url_for('dashboard') }}" class="nav-login">Dashboard</a>
+</header>
+
+<main class="dashboard-page">
+    <section class="welcome-panel">
+        <div class="status">WITHDRAWAL CENTRE</div>
+        <h1>Request a <span>Withdrawal.</span></h1>
+        <p>Check your eligibility before requesting a payout.</p>
+    </section>
+
+    <section class="referral-panel">
+        <h2>Your withdrawal requirements</h2>
+        <div class="payment-detail">
+            <span>Active plan</span>
+            <strong>{{ user["plan"] }}</strong>
+        </div>
+        <div class="payment-detail">
+            <span>Available recorded balance</span>
+            <strong>₦{{ "{:,.2f}".format(main_available) }}</strong>
+        </div>
+        <div class="payment-detail">
+            <span>Minimum withdrawal</span>
+            <strong>
+                {% if active_plan %}
+                ₦{{ "{:,.0f}".format(active_plan.withdrawal) }}
+                {% else %}
+                Not available — activate a plan first
+                {% endif %}
+            </strong>
+        </div>
+
+        <h3>Receiving bank details</h3>
+        <form method="POST" action="{{ url_for('withdraw') }}" class="account-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <label for="account_name">Account name</label>
+            <input id="account_name" name="account_name" type="text" maxlength="100" required>
+
+            <label for="account_number">Account number</label>
+            <input id="account_number" name="account_number" type="text" inputmode="numeric" pattern="[0-9]{10}" minlength="10" maxlength="10" required>
+
+            <label for="bank_name">Bank name</label>
+            <input id="bank_name" name="bank_name" type="text" maxlength="100" required>
+
+            <style>
+                .wallet-select-section {
+                    margin: 22px 0;
+                    padding: 18px;
+                    border: 1px solid rgba(89, 132, 255, .35);
+                    border-radius: 18px;
+                    background: linear-gradient(145deg, rgba(20, 32, 66, .92), rgba(12, 16, 35, .96));
+                    box-shadow: 0 8px 28px rgba(0, 0, 0, .22), inset 0 1px 0 rgba(255,255,255,.04);
+                }
+                .wallet-select-heading {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    margin-bottom: 15px;
+                }
+                .wallet-select-icon {
+                    width: 45px;
+                    height: 45px;
+                    flex-shrink: 0;
+                    display: grid;
+                    place-items: center;
+                    border-radius: 14px;
+                    font-size: 23px;
+                    background: linear-gradient(135deg, #2563eb, #7c3aed);
+                    box-shadow: 0 5px 18px rgba(79, 70, 229, .35);
+                }
+                .wallet-select-heading h3 {
+                    margin: 0 0 4px;
+                    font-size: 16px;
+                    color: #fff;
+                }
+                .wallet-select-heading p {
+                    margin: 0;
+                    font-size: 12px;
+                    color: #aab7d5;
+                }
+                .wallet-select-wrap {
+                    position: relative;
+                }
+                .wallet-select-wrap select {
+                    display: block;
+                    width: 100%;
+                    min-height: 58px;
+                    padding: 15px 44px 15px 15px;
+                    border: 1px solid #4267e8;
+                    border-radius: 13px;
+                    outline: none;
+                    background: #111a32;
+                    color: #fff;
+                    font-size: 15px;
+                    font-weight: 600;
+                    appearance: none;
+                    -webkit-appearance: none;
+                    cursor: pointer;
+                    box-sizing: border-box;
+                    transition: border-color .2s, box-shadow .2s;
+                }
+                .wallet-select-wrap select:focus {
+                    border-color: #8b7bff;
+                    box-shadow: 0 0 0 3px rgba(99, 102, 241, .2), 0 0 18px rgba(59, 130, 246, .15);
+                }
+                .wallet-select-wrap select option {
+                    background: #111a32;
+                    color: #fff;
+                    padding: 12px;
+                }
+                .wallet-select-arrow {
+                    position: absolute;
+                    right: 17px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    color: #91a8ff;
+                    pointer-events: none;
+                    font-size: 18px;
+                }
+                .wallet-select-note {
+                    margin: 11px 2px 0;
+                    color: #9eafd1;
+                    font-size: 12px;
+                    line-height: 1.6;
+                }
+                @media (max-width: 480px) {
+                    .wallet-select-section { padding: 14px; }
+                    .wallet-select-wrap select { min-height: 54px; font-size: 14px; }
+                }
+            </style>
+
+            <div class="wallet-select-section">
+                <div class="wallet-select-heading">
+                    <div class="wallet-select-icon">👛</div>
+                    <div>
+                        <h3>Choose Your Wallet</h3>
+                        <p>Select where your withdrawal will come from</p>
+                    </div>
+                </div>
+                <div class="wallet-select-wrap">
+                    <select id="wallet_type" name="wallet_type" required>
+                        <option value="main">💳 Main Wallet</option>
+                        <option value="referral">🎁 Referral Wallet</option>
+                    </select>
+                    <span class="wallet-select-arrow">⌄</span>
+                </div>
+                <p class="wallet-select-note">
+                    💡 Referral wallet withdrawals require a minimum of ₦1,000.
+                </p>
+            </div>
+
+            <div class="payment-detail">
+                <span>Main Wallet available balance</span>
+                <strong>₦{{ "{:,.2f}".format(user["balance"]) }}</strong>
+            </div>
+            <div class="payment-detail">
+                <span>Referral Wallet available balance</span>
+                <strong>₦{{ "{:,.0f}".format(referral_available) }}</strong>
+            </div>
+            <p class="deposit-warning">
+                Referral Wallet minimum is ₦1,000. Earlier commissions remain in Main Wallet; only new commissions are credited to Referral Wallet.
+            </p>
+
+            <label for="amount">Withdrawal amount (₦)</label>
+            <input id="amount" name="amount" type="number" min="1" step="1" required>
+
+            <button type="submit" class="primary-button">Submit Withdrawal Request</button>
+        </form>
+
+        <a href="{{ url_for('transaction_history', tab='withdrawals') }}" class="history-button">
+            ◷ View Withdrawal History
+        </a>
+
+        <p class="deposit-warning">
+            Submitting a request does not guarantee payment. Eligibility and
+            balance must be checked, and requests must be reviewed before payout.
+        </p>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#050914">
+<title>Login | Alixo Earn</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a>
+    <a href="{{ url_for('register') }}" class="nav-button">Register ↗</a>
+</header>
+
+<main class="auth-page">
+    <section class="auth-card">
+
+        <div class="auth-icon">↗</div>
+        <div class="status">WELCOME BACK</div>
+
+        <h1>Login to <span>Alixo.</span></h1>
+        <p class="auth-subtitle">
+            Sign in to access your member dashboard and
+            view your account information.
+        </p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-list">
+            {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('login') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <label for="username">Username</label>
+            <input
+                id="username"
+                type="text"
+                name="username"
+                placeholder="Enter your username"
+                autocomplete="username"
+                maxlength="24"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                maxlength="128"
+                required
+            >
+
+            <button class="auth-submit" type="submit">Login to My Account →</button>
+        </form>
+
+        <div class="auth-switch">
+            Don't have an account?
+            <a href="{{ url_for('register') }}">Create one now</a>
+        </div>
+
+        <a href="/" class="back-home">← Back to homepage</a>
+
+    </section>
+</main>
+
+<footer>
+    <a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a>
+    <p>Good to have you back.</p>
+    <small>© 2026 Alixo Earn</small>
+</footer>
+
+</body>
+</html>

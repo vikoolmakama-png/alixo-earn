@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#050914">
+<title>Referrals | Alixo Earn</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+.referral-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin: 24px 0;
+}
+.referral-stat {
+    padding: 20px;
+    border: 1px solid rgba(65, 130, 255, .25);
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(17, 34, 65, .95), rgba(7, 13, 28, .98));
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .15);
+}
+.referral-stat span {
+    display: block;
+    color: #a9b8d5;
+    font-size: .88rem;
+    margin-bottom: 9px;
+}
+.referral-stat strong {
+    color: #fff;
+    font-size: 1.55rem;
+    overflow-wrap: anywhere;
+}
+.referral-panel {
+    padding: 22px;
+    border: 1px solid rgba(65, 130, 255, .25);
+    border-radius: 18px;
+    background: rgba(8, 16, 33, .92);
+    margin-bottom: 22px;
+}
+.referral-link-box {
+    padding: 14px;
+    margin: 16px 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    border-radius: 12px;
+    border: 1px solid rgba(65, 130, 255, .25);
+    background: #050914;
+    color: #9dc5ff;
+}
+.referral-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+.referral-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 580px;
+}
+.referral-table th, .referral-table td {
+    text-align: left;
+    padding: 13px 12px;
+    border-bottom: 1px solid rgba(150, 175, 220, .12);
+}
+.referral-table th {
+    color: #9dc5ff;
+    font-size: .82rem;
+}
+.referral-table td {
+    color: #e5ecfa;
+    font-size: .9rem;
+}
+.commission-amount {
+    color: #55e6a5 !important;
+    font-weight: 700;
+}
+.referral-empty {
+    padding: 22px 5px;
+    color: #a9b8d5;
+    line-height: 1.7;
+}
+.copy-message {
+    color: #55e6a5;
+    overflow-wrap: anywhere;
+}
+.referral-note {
+    color: #a9b8d5;
+    font-size: .9rem;
+    line-height: 1.7;
+    margin-top: 18px;
+}
+</style>
+</head>
+<body>
+<header class="navbar">
+    <a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a>
+    <a href="{{ url_for('dashboard') }}" class="nav-login">Dashboard</a>
+</header>
+
+<main class="dashboard-page">
+    <section class="welcome-panel">
+        <div class="status">REFERRAL CENTRE</div>
+        <h1>Invite and <span>Earn.</span></h1>
+        <p>Share your personal link. When a referred member completes their first paid plan activation, you receive 40% of the activation fee.</p>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-list">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <section class="referral-stats">
+        <div class="referral-stat">
+            <span>Registered Referrals</span>
+            <strong>{{ referral_count }}</strong>
+        </div>
+        <div class="referral-stat">
+            <span>Total Commissions</span>
+            <strong>₦{{ "{:,.0f}".format(commission_total) }}</strong>
+        </div>
+        <div class="referral-stat">
+            <span>Your Active Plan</span>
+            <strong>{{ user["plan"] }}</strong>
+        </div>
+    </section>
+
+    <section class="referral-panel">
+        <h2>Your Referral Link</h2>
+        <p>Copy your link and share it with people you invite.</p>
+        <div class="referral-link-box" id="referralLink">{{ referral_link }}</div>
+        <button class="primary-button" id="copyLink" type="button">Copy Referral Link</button>
+        <p id="copyMessage" class="copy-message" aria-live="polite"></p>
+        <p class="referral-note">
+            A registration alone does not earn a commission. The referred member must complete their first paid plan activation.
+        </p>
+    </section>
+
+    <section class="referral-panel">
+        <h2>Referral Commission History</h2>
+        {% if referral_history %}
+        <div class="referral-table-wrap">
+            <table class="referral-table">
+                <thead>
+                    <tr>
+                        <th>Member</th>
+                        <th>Plan</th>
+                        <th>Activation Fee</th>
+                        <th>Your 40%</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for item in referral_history %}
+                    <tr>
+                        <td>{{ item["username"] }}</td>
+                        <td>{{ item["plan_name"] }}</td>
+                        <td>₦{{ "{:,.0f}".format(item["activation_fee"]) }}</td>
+                        <td class="commission-amount">₦{{ "{:,.0f}".format(item["commission_amount"]) }}</td>
+                        <td>{{ item["created_at"] }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="referral-empty">
+            No referral commissions recorded yet. Your history will appear here after a referred member completes their first paid plan activation.
+        </div>
+        {% endif %}
+    </section>
+</main>
+
+<script>
+document.getElementById("copyLink").addEventListener("click", async () => {
+    const link = document.getElementById("referralLink").textContent.trim();
+    const message = document.getElementById("copyMessage");
+
+    try {
+        await navigator.clipboard.writeText(link);
+        message.textContent = "Referral link copied!";
+    } catch (error) {
+        message.textContent = "Copy this link: " + link;
+    }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Membership Plans | Alixo Earn</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="navbar">
+    <a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a>
+    <a href="{{ url_for('dashboard') }}" class="nav-login">Dashboard</a>
+</header>
+
+<main class="dashboard-page">
+    <section class="welcome-panel">
+        <div class="status">MEMBERSHIP OPTIONS</div>
+        <h1>Choose your <span>Plan.</span></h1>
+        <p>Compare the listed plan terms before deciding which one is suitable for you.</p>
+    </section>
+
+    <section class="plan-grid">
+        {% for plan in plans %}
+        <article class="plan-card">
+            <div class="feature-icon">{{ plan.badge }}</div>
+            <h2>{{ plan.name }}</h2>
+            <p class="plan-price">₦{{ "{:,.0f}".format(plan.fee) }}</p>
+            <p>Activation amount</p>
+            <hr>
+            <p>Task category: <strong>{{ plan.tasks }}</strong></p>
+            <p>Stated task reward: <strong>₦{{ "{:,.0f}".format(plan.daily) }}</strong></p>
+            <p>Stated referral reward: <strong>₦{{ "{:,.0f}".format(plan.referral) }}</strong></p>
+            <p>Minimum withdrawal: <strong>₦{{ "{:,.0f}".format(plan.withdrawal) }}</strong></p>
+
+            {% if user["plan"] == plan.name %}
+            <span class="plan-current">Your current plan</span>
+            {% else %}
+            <form method="POST" action="{{ url_for('activate_plan') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="plan" value="{{ plan.name }}">
+                <button class="plan-button" type="submit">Activate Plan →</button>
+            </form>
+            {% endif %}
+        </article>
+        {% endfor %}
+    </section>
+
+    <p class="deposit-warning">
+        Listed rewards are proposed platform terms, not guaranteed income.
+        Plan activation requires verified payment and confirmation by the platform.
+    </p>
+</main>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tasks | Alixo Earn</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="navbar">
+    <a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a>
+    <a href="{{ url_for('dashboard') }}" class="nav-login">Dashboard</a>
+</header>
+
+<main class="dashboard-page">
+    <section class="welcome-panel">
+        <div class="status">TASK CENTRE</div>
+        <h1>Your <span>Tasks.</span></h1>
+        <p>Tasks and rewards depend on your activated membership and published task rules.</p>
+    </section>
+
+    <section class="referral-panel">
+        <h2>Membership: {{ user["plan"] }}</h2>
+
+        {% if active_plan %}
+        <p>Eligible task category: <strong>{{ active_plan.tasks }}</strong></p>
+        <p>Listed task reward: <strong>₦{{ "{:,.0f}".format(active_plan.daily) }}</strong></p>
+        <p class="deposit-warning">
+            No tasks have been published yet. Check back when tasks become available.
+            Rewards are credited only after a valid task is completed and verified.
+        </p>
+        {% else %}
+        <p>You have not activated a membership plan.</p>
+        <p>Review the membership options and complete the verified deposit and activation process to become eligible for plan-specific tasks.</p>
+        <a class="plan-button" href="{{ url_for('plans_page') }}">View Plans →</a>
+        {% endif %}
+    </section>
+</main>
+</body>
+</html>

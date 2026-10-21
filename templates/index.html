@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#050914">
+<meta name="description" content="Explore Alixo Earn membership plans, task categories and reward terms.">
+<title>Alixo Earn — Your Next Opportunity</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a>
+</header>
+
+<main>
+
+<section class="hero">
+    <div class="status"><span class="dot"></span> WELCOME TO ALIXO EARN</div>
+
+    <h1>Your Time.<br>Your Tasks.<br><span>Your Next Opportunity.</span></h1>
+
+    <p class="hero-text">
+        Welcome to Alixo Earn — a modern digital platform designed to
+        bring task opportunities, referral tracking and reward information
+        together in one convenient place.
+        Explore the plans, understand the terms and discover the features
+        available to you.
+    </p>
+
+    <div class="hero-actions nav-actions">
+        <a href="{{ url_for('login') }}" class="nav-login">Login</a>
+        <a href="{{ url_for('register') }}" class="nav-register">Create Account ↗</a>
+    </div>
+
+    <div class="hero-card">
+        <div>
+            <span class="small-label">WELCOME TO A NEW EXPERIENCE</span>
+            <h2>Make every task count.</h2>
+            <p>Clear information. Simple navigation. A smarter digital experience.</p>
+        </div>
+        <div class="card-symbol">A</div>
+    </div>
+</section>
+
+<section class="features" id="how">
+    <article class="feature">
+        <div class="feature-icon">01</div>
+        <h3>Choose Your Path</h3>
+        <p>
+            Explore five membership options and compare their activation
+            fees, task categories and stated reward terms before deciding.
+        </p>
+    </article>
+
+    <article class="feature">
+        <div class="feature-icon">02</div>
+        <h3>Discover Task Opportunities</h3>
+        <p>
+            Learn about the task categories associated with each plan.
+            Actual task availability and reward eligibility must be confirmed.
+        </p>
+    </article>
+
+    <article class="feature">
+        <div class="feature-icon">03</div>
+        <h3>Keep Your Progress Organised</h3>
+        <p>
+            The planned dashboard will bring task activity, referral records,
+            account balances and withdrawal requests together.
+        </p>
+    </article>
+</section>
+
+<section class="plans-section" id="plans">
+    <div class="section-heading">
+        <div class="status">✦ EXPLORE YOUR OPTIONS ✦</div>
+        <h2>Choose Your <span>Level.</span></h2>
+        <p>
+            Five plans. Different task categories. Clear terms to review.
+            Find the option that best fits your needs.
+        </p>
+    </div>
+
+    <div class="plans-grid">
+    {% for plan in plans %}
+        <article class="plan-card {{ plan.color }}">
+            <div class="plan-top">
+                <div class="plan-badge">{{ plan.badge }}</div>
+                {% if plan.name == "Premium" %}
+                    <span class="popular">PREMIUM CHOICE</span>
+                {% elif plan.name == "VIP" %}
+                    <span class="popular">VIP ACCESS</span>
+                {% endif %}
+            </div>
+
+            <h3>{{ plan.name }} Plan</h3>
+
+            <div class="price">
+                <span>₦</span>{{ "{:,.0f}".format(plan.fee) }}
+            </div>
+            <p class="price-caption">Listed activation fee</p>
+
+            <div class="divider"></div>
+
+            <div class="plan-detail">
+                <span>Referral bonus</span>
+                <strong>₦{{ "{:,.0f}".format(plan.referral) }}</strong>
+            </div>
+
+            <div class="plan-detail">
+                <span>Daily task reward</span>
+                <strong>₦{{ "{:,.0f}".format(plan.daily) }}</strong>
+            </div>
+
+            <div class="plan-detail">
+                <span>Minimum withdrawal</span>
+                <strong>₦{{ "{:,.0f}".format(plan.withdrawal) }}</strong>
+            </div>
+
+            <div class="plan-detail">
+                <span>Task category</span>
+                <strong>{{ plan.tasks }}</strong>
+            </div>
+
+            <a href="#information" class="plan-button">Review Plan Information →</a>
+        </article>
+    {% endfor %}
+    </div>
+
+    <section class="notice" id="information">
+        <div class="notice-icon">!</div>
+        <div>
+            <h3>Understand the Terms Before You Join</h3>
+            <p>
+                These figures represent proposed plan terms and are not
+                independently verified or guaranteed earnings. A listed
+                daily reward is not proof that funds are available or that
+                every member will qualify. Task availability, referral
+                eligibility, funding and withdrawal conditions should be
+                clearly documented before activation fees are collected.
+            </p>
+        </div>
+    </section>
+</section>
+
+</main>
+
+<footer>
+    <a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a>
+    <p>A modern digital experience built around clarity and opportunity.</p>
+    <small>© 2026 Alixo Earn. All rights reserved.</small>
+</footer>
+
+</body>
+</html>

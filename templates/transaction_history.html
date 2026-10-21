@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#050914">
+    <title>Transaction History | Alixo Earn</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .history-page {
+            width: min(100% - 28px, 760px);
+            margin: 24px auto 45px;
+            color: #f4f8ff;
+        }
+        .history-hero {
+            padding: 24px 20px;
+            border: 1px solid #2789e9;
+            border-radius: 22px;
+            background: radial-gradient(circle at top right, #087bff30, transparent 55%),
+                        linear-gradient(145deg, #10203b, #080f1d);
+            box-shadow: 0 0 24px #087bff18;
+        }
+        .history-hero small {
+            color: #6ce2ff;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+        .history-hero h1 {
+            margin: 12px 0 8px;
+            font-size: 30px;
+        }
+        .history-hero h1 span {
+            color: #55baff;
+            text-shadow: 0 0 18px #168bff55;
+        }
+        .history-hero p {
+            color: #a5b9d8;
+            line-height: 1.7;
+        }
+        .history-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .history-tabs a {
+            padding: 15px 8px;
+            text-align: center;
+            text-decoration: none;
+            border: 1px solid #24466b;
+            border-radius: 13px;
+            background: #0b1527;
+            color: #a9bdd9;
+            font-weight: 800;
+        }
+        .history-tabs a.active {
+            color: #fff;
+            border-color: #42c7ff;
+            background: linear-gradient(110deg, #086bdf, #087eaa);
+            box-shadow: 0 0 17px #087bff45;
+        }
+        .history-list {
+            display: grid;
+            gap: 13px;
+        }
+        .history-card {
+            padding: 18px;
+            border: 1px solid #24466b;
+            border-radius: 18px;
+            background: linear-gradient(145deg, #101e35, #080f1d);
+            box-shadow: 0 0 15px #087bff10;
+            overflow-wrap: anywhere;
+        }
+        .history-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 13px;
+        }
+        .history-amount {
+            font-size: 23px;
+            font-weight: 800;
+            color: #f2f8ff;
+        }
+        .history-status {
+            padding: 7px 10px;
+            border: 1px solid #b28a35;
+            border-radius: 30px;
+            background: #7c591b25;
+            color: #ffd47b;
+            font-size: 11px;
+            font-weight: 800;
+        }
+        .history-status.approved {
+            border-color: #1cae7b;
+            background: #0c855327;
+            color: #69f0ba;
+        }
+        .history-status.rejected {
+            border-color: #d65369;
+            background: #a91e3825;
+            color: #ff8799;
+        }
+        .history-detail {
+            padding: 10px 0;
+            border-top: 1px solid #ffffff10;
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            font-size: 13px;
+        }
+        .history-detail span {
+            color: #91a8c8;
+        }
+        .history-detail strong {
+            text-align: right;
+            color: #e8f2ff;
+        }
+        .history-empty {
+            padding: 35px 18px;
+            text-align: center;
+            border: 1px dashed #315174;
+            border-radius: 18px;
+            background: #0a1425;
+        }
+        .history-empty .empty-icon {
+            font-size: 35px;
+            color: #58c9ff;
+        }
+        .history-empty h2 {
+            font-size: 19px;
+        }
+        .history-empty p {
+            color: #91a8c8;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+        .history-back {
+            display: block;
+            margin-top: 20px;
+            padding: 14px;
+            text-align: center;
+            border: 1px solid #31577e;
+            border-radius: 13px;
+            color: #8ddcff;
+            text-decoration: none;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+<header class="navbar">
+    <a href="{{ url_for('dashboard') }}" class="logo">
+        <span>A</span>LIXO <b>EARN</b>
+    </a>
+    <a href="{{ url_for('dashboard') }}" class="nav-button">Dashboard</a>
+</header>
+
+<main class="history-page">
+    <section class="history-hero">
+        <small>ACCOUNT ACTIVITY</small>
+        <h1>Transaction <span>History</span></h1>
+        <p>Track your deposit and withdrawal requests and their review status.</p>
+    </section>
+
+    <nav class="history-tabs">
+        <a href="{{ url_for('transaction_history', tab='deposits') }}"
+           class="{{ 'active' if active_tab == 'deposits' else '' }}">
+            ↓ Deposits ({{ deposits|length }})
+        </a>
+        <a href="{{ url_for('transaction_history', tab='withdrawals') }}"
+           class="{{ 'active' if active_tab == 'withdrawals' else '' }}">
+            ↑ Withdrawals ({{ withdrawals|length }})
+        </a>
+    </nav>
+
+    {% if active_tab == 'deposits' %}
+        <section class="history-list">
+        {% for item in deposits %}
+            <article class="history-card">
+                <div class="history-top">
+                    <div class="history-amount">₦{{ "{:,.0f}".format(item["amount"]) }}</div>
+                    <span class="history-status {{ item['status']|lower }}">
+                        {{ item["status"] }}
+                    </span>
+                </div>
+                <div class="history-detail">
+                    <span>Sender name</span>
+                    <strong>{{ item["sender_name"] }}</strong>
+                </div>
+                <div class="history-detail">
+                    <span>Submitted</span>
+                    <strong>{{ item["created_at"] }}</strong>
+                </div>
+                <div class="history-detail">
+                    <span>Reference</span>
+                    <strong>DEP-{{ item["id"] }}</strong>
+                </div>
+            </article>
+        {% else %}
+            <div class="history-empty">
+                <div class="empty-icon">↓</div>
+                <h2>No deposits yet</h2>
+                <p>Your submitted deposit requests will appear here.</p>
+            </div>
+        {% endfor %}
+        </section>
+    {% else %}
+        <section class="history-list">
+        {% for item in withdrawals %}
+            <article class="history-card">
+                <div class="history-top">
+                    <div class="history-amount">₦{{ "{:,.0f}".format(item["amount"]) }}</div>
+                    <span class="history-status {{ item['status']|lower }}">
+                        {{ item["status"] }}
+                    </span>
+                </div>
+                <div class="history-detail">
+                    <span>Bank</span>
+                    <strong>{{ item["bank_name"] }}</strong>
+                </div>
+                <div class="history-detail">
+                    <span>Account name</span>
+                    <strong>{{ item["account_name"] }}</strong>
+                </div>
+                <div class="history-detail">
+                    <span>Account number</span>
+                    <strong>{{ item["account_number"] }}</strong>
+                </div>
+                <div class="history-detail">
+                    <span>Submitted</span>
+                    <strong>{{ item["created_at"] }}</strong>
+                </div>
+                <div class="history-detail">
+                    <span>Reference</span>
+                    <strong>WTH-{{ item["id"] }}</strong>
+                </div>
+            </article>
+        {% else %}
+            <div class="history-empty">
+                <div class="empty-icon">↑</div>
+                <h2>No withdrawals yet</h2>
+                <p>Your submitted withdrawal requests will appear here.</p>
+            </div>
+        {% endfor %}
+        </section>
+    {% endif %}
+
+    <a class="history-back" href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+</main>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alixo Earn | Admin Login</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+.admin-box{max-width:420px;margin:60px auto;padding:28px;border:1px solid #168bff;border-radius:18px;background:#0a1425;box-shadow:0 0 25px #087bff30}
+.admin-box h1{color:#8fe6ff}.admin-box label{display:block;margin-top:16px;color:#dbeafe}
+.admin-box input{box-sizing:border-box;width:100%;padding:13px;margin-top:7px;border-radius:9px;border:1px solid #24517b;background:#050914;color:white}
+.admin-box button{width:100%;margin-top:22px;padding:14px;border:0;border-radius:9px;background:linear-gradient(100deg,#0877ff,#13bde9);color:white;font-weight:bold}
+</style>
+</head>
+<body>
+<header class="navbar"><a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a></header>
+<main class="dashboard-page">
+<form class="admin-box" method="POST">
+<h1>Admin Login</h1>
+<p>Authorized administrators only.</p>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, message in messages %}
+<div class="flash {{ category }}">{{ message }}</div>
+{% endfor %}
+{% endwith %}
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label>Username</label>
+<input name="username" required autocomplete="username">
+<label>Password</label>
+<input type="password" name="password" required autocomplete="current-password">
+<button type="submit">Sign In</button>
+</form>
+</main>
+</body>
+</html>

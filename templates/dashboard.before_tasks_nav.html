@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#050914">
+<title>Dashboard | Alixo Earn</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a>
+    <form method="POST" action="{{ url_for('logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="nav-button logout-button">Logout ↗</button>
+    </form>
+</header>
+
+<main class="dashboard-page">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-list">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <section class="welcome-panel">
+        <div class="status"><span class="dot"></span> MEMBER DASHBOARD</div>
+        <h1>Welcome back,<br><span>{{ user["username"] }}.</span></h1>
+        <p>Manage your membership, tasks, deposits and referrals in one place.</p>
+    </section>
+
+    <section class="dashboard-grid">
+        <article class="dashboard-card">
+            <div class="feature-icon">₦</div>
+            <p>Account Balance</p>
+            <h2>₦{{ "{:,.2f}".format(user["balance"]) }}</h2>
+            <small>Recorded account balance</small>
+        </article>
+
+        <article class="dashboard-card">
+            <div class="feature-icon">💎</div>
+            <p>Active Plan</p>
+            <h2>{{ user["plan"] }}</h2>
+            <small>
+                {% if user["plan"] == "None" %}
+                No plan activated
+                {% else %}
+                Membership recorded
+                {% endif %}
+            </small>
+        </article>
+
+        <article class="dashboard-card">
+            <div class="feature-icon">👥</div>
+            <p>Registered Referrals</p>
+            <h2>{{ referral_count }}</h2>
+            <small>Accounts registered with your code</small>
+        </article>
+    </section>
+
+    <section class="referral-panel" id="referrals">
+        <div class="status">YOUR PERSONAL REFERRAL CODE</div>
+        <h2>Invite friends to Alixo Earn.</h2>
+        <p>Share your code. Referral rewards are subject to the published eligibility rules.</p>
+        <div class="referral-code">{{ user["referral_code"] }}</div>
+        <button class="primary-button" id="copyCode" type="button">Copy Referral Code</button>
+        <p id="copyMessage" class="copy-message" aria-live="polite"></p>
+    </section>
+
+    <section class="dashboard-info">
+        <h2>Getting started</h2>
+        <p>
+            If you have not activated a plan, review the available plans and
+            deposit instructions first. A plan is activated only after the
+            required payment has been verified. Task rewards and referral
+            bonuses are not guaranteed and must be recorded after eligibility
+            is confirmed.
+        </p>
+    </section>
+
+</main>
+
+<footer>
+    <a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a>
+    <p>Your digital experience starts here.</p>
+    <small>© 2026 Alixo Earn</small>
+</footer>
+
+<script>
+document.getElementById("copyCode").addEventListener("click", async () => {
+    const code = {{ user["referral_code"] | tojson }};
+    const message = document.getElementById("copyMessage");
+    try {
+        await navigator.clipboard.writeText(code);
+        message.textContent = "Referral code copied!";
+    } catch (error) {
+        message.textContent = "Your referral code is: " + code;
+    }
+});
+</script>
+
+
+<nav class="bottom-nav" aria-label="Main navigation">
+    <a href="{{ url_for('dashboard') }}" class="bottom-nav-item active">
+        <span class="bottom-nav-icon">⌂</span>
+        <span>Home</span>
+    </a>
+    <a href="{{ url_for('plans_page') }}" class="bottom-nav-item">
+        <span class="bottom-nav-icon">💎</span>
+        <span>Plans</span>
+    </a>
+    <a href="{{ url_for('deposit') }}" class="bottom-nav-item nav-feature">
+        <span class="bottom-nav-icon">＋</span>
+        <span>Deposit</span>
+    </a>
+    <a href="{{ url_for('withdraw') }}" class="bottom-nav-item">
+        <span class="bottom-nav-icon">↗</span>
+        <span>Withdraw</span>
+    </a>
+    <a href="{{ url_for('referrals') }}" class="bottom-nav-item">
+        <span class="bottom-nav-icon">☰</span>
+        <span>More</span>
+    </a>
+</nav>
+
+</body>
+</html>

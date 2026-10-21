@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Referrals | Alixo Earn</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="navbar">
+    <a href="/" class="logo"><span>A</span>LIXO <b>EARN</b></a>
+    <a href="{{ url_for('dashboard') }}" class="nav-login">Dashboard</a>
+</header>
+
+<main class="dashboard-page">
+    <section class="welcome-panel">
+        <div class="status">REFERRAL CENTRE</div>
+        <h1>Invite and <span>Share.</span></h1>
+        <p>Share your personal referral link with people you invite to Alixo Earn.</p>
+    </section>
+
+    <section class="referral-panel">
+        <h2>Your referral link</h2>
+        <div class="referral-code" id="referralLink">{{ referral_link }}</div>
+        <button class="primary-button" id="copyLink" type="button">Copy Referral Link</button>
+        <p id="copyMessage" class="copy-message" aria-live="polite"></p>
+
+        <div class="payment-detail">
+            <span>Registered referrals</span>
+            <strong>{{ referral_count }}</strong>
+        </div>
+
+        <div class="payment-detail">
+            <span>Your active plan</span>
+            <strong>{{ user["plan"] }}</strong>
+        </div>
+
+        <p class="deposit-warning">
+            Referral rewards are credited only when the referred member's
+            qualifying plan activation has been verified and the reward is
+            recorded by the platform. A registration alone does not earn a bonus.
+        </p>
+    </section>
+</main>
+
+<script>
+document.getElementById("copyLink").addEventListener("click", async () => {
+    const link = document.getElementById("referralLink").textContent.trim();
+    const message = document.getElementById("copyMessage");
+    try {
+        await navigator.clipboard.writeText(link);
+        message.textContent = "Referral link copied!";
+    } catch (error) {
+        message.textContent = link;
+    }
+});
+</script>
+</body>
+</html>
