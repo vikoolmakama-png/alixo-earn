@@ -511,12 +511,8 @@ def deposit():
         except Exception as exc:
             db.rollback()
             app.logger.exception("Deposit submission failed")
-            error_id = __import__("secrets").token_hex(4)
-            app.logger.error("Deposit diagnostic ID %s; error type: %s", error_id, type(exc).__name__)
             flash(
-                f"Deposit failed (reference {error_id}). "
-                f"Database error type: {type(exc).__name__}. "
-                "No deposit request was saved. Contact support with this reference.",
+                f"Deposit error: {type(exc).__name__}: {str(exc)[:250]}",
                 "error"
             )
             return redirect(url_for("deposit"))
