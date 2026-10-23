@@ -24,27 +24,27 @@ app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 PLANS = [
     {
         "name": "Starter", "badge": "🚀", "fee": 2000,
-        "referral": (2000 * 40) // 100, "daily": 200, "withdrawal": 15000,
+        "referral": (2000 * 40) // 100, "daily": 200, "withdrawal": 4000,
         "tasks": "Basic Tasks", "color": "starter"
     },
     {
         "name": "Basic", "badge": "🥈", "fee": 3500,
-        "referral": (3500 * 40) // 100, "daily": 350, "withdrawal": 20000,
+        "referral": (3500 * 40) // 100, "daily": 350, "withdrawal": 6000,
         "tasks": "Standard Tasks", "color": "basic"
     },
     {
         "name": "Classic", "badge": "🥇", "fee": 5000,
-        "referral": (5000 * 40) // 100, "daily": 500, "withdrawal": 25000,
+        "referral": (5000 * 40) // 100, "daily": 500, "withdrawal": 8000,
         "tasks": "Advanced Tasks", "color": "classic"
     },
     {
         "name": "Premium", "badge": "💎", "fee": 10000,
-        "referral": (10000 * 40) // 100, "daily": 1000, "withdrawal": 50000,
+        "referral": (10000 * 40) // 100, "daily": 1000, "withdrawal": 12000,
         "tasks": "Premium Tasks", "color": "premium"
     },
     {
         "name": "VIP", "badge": "👑", "fee": 15000,
-        "referral": (15000 * 40) // 100, "daily": 1500, "withdrawal": 75000,
+        "referral": (15000 * 40) // 100, "daily": 1500, "withdrawal": 15000,
         "tasks": "VIP Tasks", "color": "vip"
     }
 ]
