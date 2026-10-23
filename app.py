@@ -704,15 +704,78 @@ def withdraw():
             flash(f"Your plan's minimum withdrawal is ₦{minimum:,.0f}.", "error")
             return redirect(url_for("withdraw"))
 
-        if amount > user["balance"]:
-            flash("Your requested amount exceeds your recorded balance.", "error")
-            return redirect(url_for("withdraw"))
+        # Lock the user's balance and recheck eligibility atomically.
+        db.commit()
+        try:
+            db.execute("BEGIN")
 
-        flash(
-            "Your details passed basic checks, but withdrawal requests "
-            "are not yet enabled. No money has been deducted or sent.",
-            "info"
-        )
+            locked_user = db.execute(
+                "SELECT balance, plan FROM users WHERE id = %s FOR UPDATE",
+                (session["user_id"],)
+            ).fetchone()
+
+            if locked_user is None:
+                db.rollback()
+                flash("Account not found.", "error")
+                return redirect(url_for("withdraw"))
+
+            locked_plan = find_plan(locked_user["plan"])
+
+            if locked_plan is None:
+                db.rollback()
+                flash("Activate an eligible plan before requesting a withdrawal.", "error")
+                return redirect(url_for("withdraw"))
+
+            minimum = int(locked_plan["withdrawal"])
+
+            if amount < minimum:
+                db.rollback()
+                flash(
+                    f"Your plan's minimum withdrawal is ₦{minimum:,.0f}.",
+                    "error"
+                )
+                return redirect(url_for("withdraw"))
+
+            if amount > locked_user["balance"]:
+                db.rollback()
+                flash("Insufficient available balance.", "error")
+                return redirect(url_for("withdraw"))
+
+            db.execute(
+                """INSERT INTO withdrawals
+                   (user_id, amount, account_name, account_number, bank_name, status)
+                   VALUES (%s, %s, %s, %s, %s, 'Pending')""",
+                (
+                    session["user_id"],
+                    amount,
+                    account_name,
+                    account_number,
+                    bank_name
+                )
+            )
+
+            db.execute(
+                "UPDATE users SET balance = balance - %s WHERE id = %s",
+                (amount, session["user_id"])
+            )
+
+            db.commit()
+
+            flash(
+                f"Withdrawal request for ₦{amount:,.0f} submitted successfully. "
+                "Your balance has been updated and the request is pending admin review.",
+                "success"
+            )
+
+        except Exception:
+            db.rollback()
+            app.logger.exception("Withdrawal request failed")
+            flash(
+                "Could not submit your withdrawal request. "
+                "Please check your balance and try again.",
+                "error"
+            )
+
         return redirect(url_for("withdraw"))
 
     referral_total = db.execute(
@@ -1064,19 +1127,11 @@ def admin_review_withdrawal(withdrawal_id):
             flash("Withdrawal already reviewed or not found.", "error")
             return redirect(url_for("admin_dashboard"))
 
-        if decision == "Approved":
-            user = db.execute(
-                "SELECT balance FROM users WHERE id=%s",
-                (row["user_id"],)
-            ).fetchone()
-
-            if not user or user["balance"] < row["amount"]:
-                db.rollback()
-                flash("Insufficient balance; not approved.", "error")
-                return redirect(url_for("admin_dashboard"))
-
+        # Funds were deducted when the request was submitted.
+        # Refund exactly once if the pending request is rejected.
+        if decision == "Rejected":
             db.execute(
-                "UPDATE users SET balance=balance-%s WHERE id=%s",
+                "UPDATE users SET balance = balance + %s WHERE id = %s",
                 (row["amount"], row["user_id"])
             )
 
